@@ -407,7 +407,12 @@ button { cursor: pointer; font-family: var(--sans); border: none; background: no
     transition: right 0.4s var(--ease-out); z-index: 100; border-left: 1px solid var(--border);
   }
   .nav-links.open { right: 0; }
-  .nav-resume { position: static; margin-top: 0; }
+  .nav-resume {
+    position: static; margin-top: 0;
+    width: auto; max-width: none; height: auto;
+    background: none; border-left: none;
+    flex-direction: row; padding: 0.45rem 1.25rem;
+  }
   .nav-link { font-size: 1rem; }
   .nav-toggle { display: block; }
 
