@@ -161,4 +161,43 @@ document.addEventListener('DOMContentLoaded', () => {
     item.style.transitionDelay = `${i * 0.1}s`;
   });
 
+  /* ── Gallery Tabs ── */
+  const galleryTabs = document.querySelectorAll('.gallery-tab');
+  const mediumContainers = document.querySelectorAll('.gallery-medium-container');
+
+  galleryTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      galleryTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const medium = tab.getAttribute('data-medium');
+      mediumContainers.forEach(c => {
+        c.style.display = c.id === `medium-${medium}` ? 'block' : 'none';
+      });
+    });
+  });
+
+  /* ── Room Filters ── */
+  const roomFilters = document.querySelectorAll('.room-filter');
+  const roomItems = document.querySelectorAll('.room-item');
+
+  roomFilters.forEach(filter => {
+    filter.addEventListener('click', () => {
+      roomFilters.forEach(f => f.classList.remove('active'));
+      filter.classList.add('active');
+      const room = filter.getAttribute('data-room');
+      
+      roomItems.forEach(item => {
+        if (room === 'all' || item.getAttribute('data-room') === room) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Trigger initial filter
+  const initialFilter = document.querySelector('.room-filter.active');
+  if (initialFilter) initialFilter.click();
+
 });

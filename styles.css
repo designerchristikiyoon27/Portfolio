@@ -449,3 +449,29 @@ button { cursor: pointer; font-family: var(--sans); border: none; background: no
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ============================================================
+   GALLERY TABS & FILTERS
+   ============================================================ */
+.gallery-tab {
+  font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-muted); padding: 0.6rem 1.5rem; border-radius: 100px;
+  border: 1px solid transparent; transition: all 0.3s ease;
+}
+.gallery-tab:hover { color: var(--cream); }
+.gallery-tab.active {
+  color: var(--gold); border-color: var(--gold); background: var(--gold-soft);
+}
+
+.room-filter {
+  font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-sec); padding: 0.4rem 1rem; border-radius: 100px;
+  background: var(--surface); border: 1px solid var(--border); transition: all 0.3s ease;
+}
+.room-filter:hover { background: var(--surface-2); color: var(--cream); border-color: var(--border-warm); }
+.room-filter.active {
+  background: var(--gold); color: var(--bg); border-color: var(--gold);
+}
+
+.plan-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); border-color: var(--gold); }
+.plan-card:hover svg { stroke: var(--gold-light); }
