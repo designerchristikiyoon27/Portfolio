@@ -84,22 +84,23 @@ button { cursor: pointer; font-family: var(--sans); border: none; background: no
 /* ============================================================
    NAV
    ============================================================ */
-.nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 0 clamp(1.5rem, 4vw, 3.5rem); transition: all 0.4s var(--ease-out); }
-.nav.scrolled { background: rgba(26, 20, 16, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 0 clamp(1.5rem, 4vw, 3.5rem); transition: all 0.4s var(--ease-out); background: var(--bg); }
+.nav.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
 .nav.nav--hidden { transform: translateY(-100%); }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 76px; border-bottom: 1px solid var(--border); }
 .nav.scrolled .nav-inner { border-color: transparent; }
 
 .nav-brand { display: flex; gap: 2px; font-family: var(--serif); font-size: 1.6rem; font-weight: 700; }
-.nav-brand-k { color: var(--gold); }
-.nav-brand-p { color: var(--text); }
+.nav-brand:hover svg { transform: scale(1.1); stroke: var(--gold-light); filter: drop-shadow(0 0 8px rgba(200, 165, 90, 0.4)); }
 
-.nav-links { display: flex; gap: 2.5rem; }
-.nav-link { font-size: 0.85rem; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: 0.1em; position: relative; padding: 0.25rem 0; transition: color 0.3s ease; }
-.nav-link::after { content: ''; position: absolute; bottom: -4px; left: 50%; width: 0; height: 1.5px; background: var(--gold); transition: all 0.3s var(--ease-out); transform: translateX(-50%); }
-.nav-link:hover, .nav-link.active { color: var(--gold-light); }
-.nav-link:hover::after, .nav-link.active::after { width: 100%; }
-
+.nav-links { display: flex; gap: 0.8rem; align-items: center; }
+.nav-link {
+  font-family: var(--sans); font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-sec); padding: 0.4rem 1rem; border-radius: 100px;
+  background: var(--surface); border: 1px solid var(--border); transition: all 0.3s ease;
+}
+.nav-link:hover { background: var(--surface-2); color: var(--cream); border-color: var(--border-warm); }
+.nav-link.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
 .nav-resume { font-size: 0.75rem; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid var(--border-warm); padding: 0.45rem 1.25rem; border-radius: 100px; transition: all 0.3s ease; }
 .nav-resume:hover { background: var(--gold); color: var(--bg); }
 
@@ -483,7 +484,6 @@ button { cursor: pointer; font-family: var(--sans); border: none; background: no
   .g-tall { grid-row: span 2; }
   .project-header { flex-direction: column; gap: 0.5rem; }
   .project-number { font-size: 2.5rem; }
-}
   .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
   .about-portrait { max-width: 280px; }
 

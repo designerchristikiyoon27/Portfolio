@@ -25,8 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const y = window.scrollY;
     if (nav) {
       nav.classList.toggle('scrolled', y > 60);
-      if (y > lastY && y > 150) nav.classList.add('nav--hidden');
-      else nav.classList.remove('nav--hidden');
     }
     lastY = y;
   }, { passive: true });
