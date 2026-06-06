@@ -4,6 +4,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  /* ── Disable Right Click (Save Image As protection) ── */
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
   /* ── Loader ── */
   const loader = document.getElementById('loader');
   const hideLoader = () => {
