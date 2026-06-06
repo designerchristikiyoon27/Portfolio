@@ -58,6 +58,44 @@ $html += '    <div class="gallery-medium-container" id="medium-screenshot" style
 $html += '      <p><em>Coming soon...</em></p>'
 $html += '    </div>'
 $html += '  </section>'
+$html += "  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.gallery-medium-container').forEach(container => {
+        const gallery = container.querySelector('.project-gallery');
+        if (!gallery) return;
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.textContent = 'Load More';
+        loadMoreBtn.className = 'load-more-btn';
+        loadMoreBtn.style = 'margin:2rem auto;display:block';
+        gallery.parentNode.insertBefore(loadMoreBtn, gallery.nextSibling);
+        let visibleCount = 12;
+        function updateVisibility() {
+          const activeRoomBtn = container.querySelector('.room-filter.active');
+          const activeRoom = activeRoomBtn ? activeRoomBtn.dataset.room : 'all';
+          const selector = activeRoom !== 'all' ? `.g-item[data-room=\"${activeRoom}\"]` : '.g-item';
+          const items = gallery.querySelectorAll(selector);
+          items.forEach((item, i) => {
+            item.style.display = i < visibleCount ? '' : 'none';
+          });
+          loadMoreBtn.style.display = visibleCount >= items.length ? 'none' : 'block';
+        }
+        // initial visibility
+        updateVisibility();
+        // room filter clicks
+        container.querySelectorAll('.room-filter').forEach(btn => {
+          btn.addEventListener('click', () => {
+            visibleCount = 12;
+            updateVisibility();
+          });
+        });
+        // load more click
+        loadMoreBtn.addEventListener('click', () => {
+          visibleCount += 12;
+          updateVisibility();
+        });
+      });
+    });
+  </script>"
 
 # 2D Plans Section
 $html += '  <!-- ========== 2D PLANS ========== -->'

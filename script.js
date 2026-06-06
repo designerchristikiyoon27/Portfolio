@@ -177,26 +177,77 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── Room Filters ── */
-  const roomFilters = document.querySelectorAll('.room-filter');
-  const roomItems = document.querySelectorAll('.room-item');
+// Updated room filter and load more handling
+const roomFilters = document.querySelectorAll('.room-filter');
+const galleryContainers = document.querySelectorAll('.gallery-medium-container');
+let currentRoom = 'all'; // default shows all
 
-  roomFilters.forEach(filter => {
-    filter.addEventListener('click', () => {
-      roomFilters.forEach(f => f.classList.remove('active'));
-      filter.classList.add('active');
-      const room = filter.getAttribute('data-room');
-      
-      roomItems.forEach(item => {
-        if (room === 'all' || item.getAttribute('data-room') === room) {
-          item.style.display = 'block';
+// Initialize Load More for each gallery container
+galleryContainers.forEach(container => {
+  const loadMoreBtn = document.createElement('button');
+  loadMoreBtn.textContent = 'Load More';
+  loadMoreBtn.className = 'load-more-btn';
+  loadMoreBtn.style = 'margin:2rem auto;display:block';
+  container.parentNode.insertBefore(loadMoreBtn, container.nextSibling);
+
+  // State holder
+  container._loadMore = {
+    visibleCount: 12,
+    filterRoom: 'all',
+    update() {
+      const items = Array.from(container.querySelectorAll('.g-item'));
+      let shown = 0;
+      items.forEach(item => {
+        const itemRoom = item.getAttribute('data-room');
+        const matchesFilter = this.filterRoom === 'all' || itemRoom === this.filterRoom;
+        if (!matchesFilter) {
+          item.style.display = 'none';
+          return;
+        }
+        if (shown < this.visibleCount) {
+          item.style.display = '';
+          shown++;
         } else {
           item.style.display = 'none';
         }
       });
+      // Show button only if there are hidden matching items
+      const totalMatching = items.filter(i => this.filterRoom === 'all' || i.getAttribute('data-room') === this.filterRoom).length;
+      loadMoreBtn.style.display = (shown < totalMatching) ? 'block' : 'none';
+    },
+    reset() {
+      this.visibleCount = 12;
+      this.update();
+    }
+  };
+
+  // Initial update
+  container._loadMore.update();
+
+  // Load More button click
+  loadMoreBtn.addEventListener('click', () => {
+    container._loadMore.visibleCount += 12;
+    container._loadMore.update();
+  });
+});
+
+// Room filter interaction
+roomFilters.forEach(filter => {
+  filter.addEventListener('click', () => {
+    // Update active UI
+    roomFilters.forEach(f => f.classList.remove('active'));
+    filter.classList.add('active');
+    const room = filter.getAttribute('data-room');
+    currentRoom = room;
+    // Apply filter to each container's load more state
+    galleryContainers.forEach(container => {
+      container._loadMore.filterRoom = room;
+      container._loadMore.reset(); // reset visibleCount to 12 for new filter
     });
   });
+});
 
-  // Trigger initial filter
+  // Trigger initial filter and load more setup
   const initialFilter = document.querySelector('.room-filter.active');
   if (initialFilter) initialFilter.click();
 
