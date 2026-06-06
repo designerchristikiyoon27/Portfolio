@@ -112,13 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           items.forEach((item, i) => {
-            item.style.transitionDelay = `${i * 0.07}s`;
+            item.style.transitionDelay = `${(i % 12) * 0.07}s`;
             item.classList.add('visible');
           });
           gObs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08 });
+    }, { threshold: 0, rootMargin: '50px' });
     gObs.observe(gallery);
   });
 
