@@ -251,4 +251,53 @@ roomFilters.forEach(filter => {
   const initialFilter = document.querySelector('.room-filter.active');
   if (initialFilter) initialFilter.click();
 
+  /* ── Lightbox Logic ── */
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  const closeBtn = document.querySelector('.lightbox-close');
+
+  if (lightbox && lightboxImg) {
+    // Open lightbox
+    document.querySelectorAll('.g-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const img = item.querySelector('img');
+        const cap = item.querySelector('.g-cap');
+        if (img) {
+          lightbox.style.display = 'flex';
+          lightboxImg.src = img.src;
+          if (cap) {
+            lightboxCaption.textContent = cap.textContent;
+          } else {
+            lightboxCaption.textContent = '';
+          }
+          document.body.classList.add('no-scroll'); // Prevent background scrolling
+        }
+      });
+    });
+
+    // Close lightbox
+    const closeLightbox = () => {
+      lightbox.style.display = 'none';
+      lightboxImg.src = '';
+      document.body.classList.remove('no-scroll');
+    };
+
+    closeBtn.addEventListener('click', closeLightbox);
+    
+    // Close on outside click
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+        closeLightbox();
+      }
+    });
+  }
+
 });
