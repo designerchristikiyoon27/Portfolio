@@ -1,7 +1,12 @@
 import os
 import urllib.parse
+from PIL import Image
 
 base_dir = r"c:\Users\himan\Downloads\Portfolio\Portfolio_media\Real_Images"
+thumb_dir = r"c:\Users\himan\Downloads\Portfolio\Portfolio_media\Real_Images_Thumbs"
+
+if not os.path.exists(thumb_dir):
+    os.makedirs(thumb_dir)
 
 # Category definitions: (folder_name, display_name, filter_id)
 categories = [
@@ -69,9 +74,32 @@ for folder, display_name, filter_id in categories:
                 f'        </div>'
             )
         else:
+            # Process thumbnail
+            orig_path = os.path.join(base_dir, folder, f)
+            folder_thumb_dir = os.path.join(thumb_dir, folder)
+            if not os.path.exists(folder_thumb_dir):
+                os.makedirs(folder_thumb_dir)
+            
+            # Use .jpg for thumbnail even if original is .png, etc.
+            thumb_name = os.path.splitext(f)[0] + ".jpg"
+            thumb_path_local = os.path.join(folder_thumb_dir, thumb_name)
+            encoded_thumb_path = f"Portfolio_media/Real_Images_Thumbs/{folder}/{urllib.parse.quote(thumb_name)}"
+            
+            if not os.path.exists(thumb_path_local):
+                try:
+                    print(f"Generating thumbnail for {f}...")
+                    with Image.open(orig_path) as img:
+                        if img.mode in ("RGBA", "P"):
+                            img = img.convert("RGB")
+                        img.thumbnail((800, 800), Image.Resampling.LANCZOS)
+                        img.save(thumb_path_local, "JPEG", quality=75)
+                except Exception as e:
+                    print(f"Error generating thumbnail for {f}: {e}")
+                    encoded_thumb_path = encoded_path # Fallback
+
             html_items.append(
                 f'        <div class="g-item real-item" data-project="{filter_id}">\n'
-                f'          <img src="{encoded_path}" alt="{display_name}" loading="lazy" />\n'
+                f'          <img src="{encoded_thumb_path}" data-full-src="{encoded_path}" alt="{display_name}" loading="lazy" />\n'
                 f'          <span class="g-cap">{display_name}</span>\n'
                 f'        </div>'
             )

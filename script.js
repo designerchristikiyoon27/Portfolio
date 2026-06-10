@@ -299,7 +299,8 @@ galleryContainers.forEach(container => {
         } else if (img) {
           lightbox.style.display = 'flex';
           lightboxImg.style.display = '';
-          lightboxImg.src = img.src;
+          const fullSrc = img.getAttribute('data-full-src') || img.src;
+          lightboxImg.src = fullSrc;
           if (cap) lightboxCaption.textContent = cap.textContent;
           else lightboxCaption.textContent = '';
           document.body.classList.add('no-scroll');
