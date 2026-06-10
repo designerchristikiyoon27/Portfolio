@@ -177,11 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ── Room Filters ── */
-// Updated room filter and load more handling
-const roomFilters = document.querySelectorAll('.room-filter');
+  /* ── Room / Project Filters ── */
+// Updated filter and load more handling - supports both data-room and data-project
 const galleryContainers = document.querySelectorAll('.gallery-medium-container');
-let currentRoom = 'all'; // default shows all
 
 // Initialize Load More for each gallery container
 galleryContainers.forEach(container => {
@@ -194,13 +192,14 @@ galleryContainers.forEach(container => {
   // State holder
   container._loadMore = {
     visibleCount: 12,
-    filterRoom: 'all',
+    filterValue: 'all',
+    filterAttr: 'data-room', // can be 'data-room' or 'data-project'
     update() {
       const items = Array.from(container.querySelectorAll('.g-item'));
       let shown = 0;
       items.forEach(item => {
-        const itemRoom = item.getAttribute('data-room');
-        const matchesFilter = this.filterRoom === 'all' || itemRoom === this.filterRoom;
+        const itemVal = item.getAttribute(this.filterAttr);
+        const matchesFilter = this.filterValue === 'all' || itemVal === this.filterValue;
         if (!matchesFilter) {
           item.style.display = 'none';
           return;
@@ -213,7 +212,7 @@ galleryContainers.forEach(container => {
         }
       });
       // Show button only if there are hidden matching items
-      const totalMatching = items.filter(i => this.filterRoom === 'all' || i.getAttribute('data-room') === this.filterRoom).length;
+      const totalMatching = items.filter(i => this.filterValue === 'all' || i.getAttribute(this.filterAttr) === this.filterValue).length;
       loadMoreBtn.style.display = (shown < totalMatching) ? 'block' : 'none';
     },
     reset() {
@@ -230,27 +229,41 @@ galleryContainers.forEach(container => {
     container._loadMore.visibleCount += 12;
     container._loadMore.update();
   });
-});
 
-// Room filter interaction
-roomFilters.forEach(filter => {
-  filter.addEventListener('click', () => {
-    // Update active UI
-    roomFilters.forEach(f => f.classList.remove('active'));
-    filter.classList.add('active');
-    const room = filter.getAttribute('data-room');
-    currentRoom = room;
-    // Apply filter to each container's load more state
-    galleryContainers.forEach(container => {
-      container._loadMore.filterRoom = room;
-      container._loadMore.reset(); // reset visibleCount to 12 for new filter
+  // Bind filters that are INSIDE this container
+  const filters = container.querySelectorAll('.room-filter');
+  filters.forEach(filter => {
+    filter.addEventListener('click', () => {
+      // Update active UI only within this container's filters
+      filters.forEach(f => f.classList.remove('active'));
+      filter.classList.add('active');
+      // Detect which filter type (data-room or data-project)
+      const room = filter.getAttribute('data-room');
+      const project = filter.getAttribute('data-project');
+      if (project !== null) {
+        container._loadMore.filterAttr = 'data-project';
+        container._loadMore.filterValue = project;
+      } else {
+        container._loadMore.filterAttr = 'data-room';
+        container._loadMore.filterValue = room || 'all';
+      }
+      container._loadMore.reset();
     });
   });
+
+  // Trigger initial filter
+  const initialFilter = container.querySelector('.room-filter.active');
+  if (initialFilter) initialFilter.click();
 });
 
-  // Trigger initial filter and load more setup
-  const initialFilter = document.querySelector('.room-filter.active');
-  if (initialFilter) initialFilter.click();
+  /* ── Video hover play/pause ── */
+  document.querySelectorAll('.g-item video').forEach(video => {
+    const item = video.closest('.g-item');
+    if (item) {
+      item.addEventListener('mouseenter', () => { video.play().catch(() => {}); });
+      item.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+    }
+  });
 
   /* ── Lightbox Logic ── */
   const lightbox = document.getElementById('lightbox');
@@ -259,20 +272,37 @@ roomFilters.forEach(filter => {
   const closeBtn = document.querySelector('.lightbox-close');
 
   if (lightbox && lightboxImg) {
-    // Open lightbox
+    // Open lightbox (supports both images and videos)
     document.querySelectorAll('.g-item').forEach(item => {
       item.addEventListener('click', () => {
         const img = item.querySelector('img');
+        const video = item.querySelector('video');
         const cap = item.querySelector('.g-cap');
-        if (img) {
+        
+        // Remove any existing lightbox video
+        const existingVid = lightbox.querySelector('.lightbox-video');
+        if (existingVid) existingVid.remove();
+        
+        if (video) {
           lightbox.style.display = 'flex';
+          lightboxImg.style.display = 'none';
+          const lbVideo = document.createElement('video');
+          lbVideo.className = 'lightbox-video';
+          lbVideo.src = video.src;
+          lbVideo.controls = true;
+          lbVideo.autoplay = true;
+          lbVideo.style.cssText = 'max-width:90vw;max-height:85vh;border-radius:8px;';
+          lightboxImg.parentNode.insertBefore(lbVideo, lightboxImg);
+          if (cap) lightboxCaption.textContent = cap.textContent;
+          else lightboxCaption.textContent = '';
+          document.body.classList.add('no-scroll');
+        } else if (img) {
+          lightbox.style.display = 'flex';
+          lightboxImg.style.display = '';
           lightboxImg.src = img.src;
-          if (cap) {
-            lightboxCaption.textContent = cap.textContent;
-          } else {
-            lightboxCaption.textContent = '';
-          }
-          document.body.classList.add('no-scroll'); // Prevent background scrolling
+          if (cap) lightboxCaption.textContent = cap.textContent;
+          else lightboxCaption.textContent = '';
+          document.body.classList.add('no-scroll');
         }
       });
     });
@@ -281,6 +311,9 @@ roomFilters.forEach(filter => {
     const closeLightbox = () => {
       lightbox.style.display = 'none';
       lightboxImg.src = '';
+      lightboxImg.style.display = '';
+      const lbVideo = lightbox.querySelector('.lightbox-video');
+      if (lbVideo) { lbVideo.pause(); lbVideo.remove(); }
       document.body.classList.remove('no-scroll');
     };
 
